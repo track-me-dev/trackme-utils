@@ -1,3 +1,5 @@
+package main;
+
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
 import org.jxmapviewer.VirtualEarthTileFactoryInfo;
@@ -6,19 +8,32 @@ import org.jxmapviewer.input.ZoomMouseWheelListenerCenter;
 import org.jxmapviewer.viewer.DefaultTileFactory;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
+import org.jxmapviewer.viewer.WaypointPainter;
+import waypoint.EventWaypoint;
+import waypoint.MyWaypoint;
+import waypoint.WaypointRender;
 
 import javax.swing.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class GpxGenerator extends JFrame {
+
+    private final Set<MyWaypoint> waypoints = new HashSet<>();
 
     private JPanel mainPanel;
     private JXMapViewer jxMapViewer;
     private JComboBox<String> comboMapType;
+    private JButton buttonAddWaypoint;
+    private JButton buttonClearWaypoint;
+    private EventWaypoint event;
 
     public GpxGenerator() {
         initFrame();
         initMapView();
         initComboMapType();
+        initButtons();
+        event = waypoint -> JOptionPane.showMessageDialog(this, waypoint.getName());
     }
 
     public static void main(String[] args) {
@@ -65,5 +80,40 @@ public class GpxGenerator extends JFrame {
             DefaultTileFactory tileFactory = new DefaultTileFactory(info);
             jxMapViewer.setTileFactory(tileFactory);
         });
+    }
+
+    private void initButtons() {
+        buttonAddWaypoint.addActionListener(e -> {
+            addWaypoint(new MyWaypoint("Test001", event, new GeoPosition(37.2961211,-121.980907)));
+            initWaypoint();
+        });
+        buttonClearWaypoint.addActionListener(event -> {
+            clearWaypoint();
+        });
+    }
+
+    private void initWaypoint() {
+        WaypointPainter<MyWaypoint> wp = new WaypointRender();
+        wp.setWaypoints(waypoints);
+        jxMapViewer.setOverlayPainter(wp);
+        for (MyWaypoint d : waypoints) {
+            jxMapViewer.add(d.getButton());
+        }
+    }
+
+    private void addWaypoint(MyWaypoint waypoint) {
+        for (MyWaypoint d : waypoints) {
+            jxMapViewer.remove(d.getButton());
+        }
+        waypoints.add(waypoint);
+        initWaypoint();
+    }
+
+    private void clearWaypoint() {
+        for (MyWaypoint d : waypoints) {
+            jxMapViewer.remove(d.getButton());
+        }
+        waypoints.clear();
+        initWaypoint();
     }
 }
