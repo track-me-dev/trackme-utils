@@ -1,8 +1,10 @@
 package main;
 
+import api.MapApi;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
 import org.jxmapviewer.VirtualEarthTileFactoryInfo;
+import org.jxmapviewer.google.GoogleMapsTileFactoryInfo;
 import org.jxmapviewer.input.PanMouseInputListener;
 import org.jxmapviewer.input.ZoomMouseWheelListenerCenter;
 import org.jxmapviewer.viewer.DefaultTileFactory;
@@ -22,7 +24,7 @@ public class GpxGenerator extends JFrame {
     private final Set<MyWaypoint> waypoints = new HashSet<>();
 
     private JPanel mainPanel;
-    private JXMapViewer jxMapViewer;
+    private JXMapViewer mapViewer;
     private JComboBox<String> comboMapType;
     private JButton buttonAddWaypoint;
     private JButton buttonClearWaypoint;
@@ -53,17 +55,17 @@ public class GpxGenerator extends JFrame {
     }
 
     private void initMapView() {
-        OSMTileFactoryInfo info = new OSMTileFactoryInfo();
-        DefaultTileFactory tileFactory = new DefaultTileFactory(info);
-        jxMapViewer.setTileFactory(tileFactory);
-        GeoPosition geoPosition = new GeoPosition(37.7749, -122.4194);
-        jxMapViewer.setAddressLocation(geoPosition);
-        jxMapViewer.setZoom(12);
+        CustomTileFactoryInfo tileFactoryInfo = new CustomTileFactoryInfo();
+        DefaultTileFactory tileFactory = new DefaultTileFactory(tileFactoryInfo);
+        mapViewer.setTileFactory(tileFactory);
+        GeoPosition initialPosition = new GeoPosition(37.7749, -122.4194);
+        mapViewer.setAddressLocation(initialPosition);
+        mapViewer.setZoom(12);
 
-        PanMouseInputListener mouseMove = new PanMouseInputListener(jxMapViewer);
-        jxMapViewer.addMouseListener(mouseMove);
-        jxMapViewer.addMouseMotionListener(mouseMove);
-        jxMapViewer.addMouseWheelListener(new ZoomMouseWheelListenerCenter(jxMapViewer));
+        PanMouseInputListener mouseMove = new PanMouseInputListener(mapViewer);
+        mapViewer.addMouseListener(mouseMove);
+        mapViewer.addMouseMotionListener(mouseMove);
+        mapViewer.addMouseWheelListener(new ZoomMouseWheelListenerCenter(mapViewer));
 
     }
 
@@ -78,13 +80,13 @@ public class GpxGenerator extends JFrame {
                 default -> new OSMTileFactoryInfo();
             };
             DefaultTileFactory tileFactory = new DefaultTileFactory(info);
-            jxMapViewer.setTileFactory(tileFactory);
+            mapViewer.setTileFactory(tileFactory);
         });
     }
 
     private void initButtons() {
         buttonAddWaypoint.addActionListener(e -> {
-            addWaypoint(new MyWaypoint("Test001", event, new GeoPosition(37.2961211,-121.980907)));
+            addWaypoint(new MyWaypoint("Test001", event, new GeoPosition(37.2961211, -121.980907)));
             initWaypoint();
         });
         buttonClearWaypoint.addActionListener(event -> {
@@ -95,15 +97,15 @@ public class GpxGenerator extends JFrame {
     private void initWaypoint() {
         WaypointPainter<MyWaypoint> wp = new WaypointRender();
         wp.setWaypoints(waypoints);
-        jxMapViewer.setOverlayPainter(wp);
+        mapViewer.setOverlayPainter(wp);
         for (MyWaypoint d : waypoints) {
-            jxMapViewer.add(d.getButton());
+            mapViewer.add(d.getButton());
         }
     }
 
     private void addWaypoint(MyWaypoint waypoint) {
         for (MyWaypoint d : waypoints) {
-            jxMapViewer.remove(d.getButton());
+            mapViewer.remove(d.getButton());
         }
         waypoints.add(waypoint);
         initWaypoint();
@@ -111,7 +113,7 @@ public class GpxGenerator extends JFrame {
 
     private void clearWaypoint() {
         for (MyWaypoint d : waypoints) {
-            jxMapViewer.remove(d.getButton());
+            mapViewer.remove(d.getButton());
         }
         waypoints.clear();
         initWaypoint();

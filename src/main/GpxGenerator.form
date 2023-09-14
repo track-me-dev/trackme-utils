@@ -8,7 +8,7 @@
     <properties/>
     <border type="none"/>
     <children>
-      <component id="58519" class="org.jxmapviewer.JXMapViewer" binding="jxMapViewer">
+      <component id="58519" class="org.jxmapviewer.JXMapViewer" binding="mapViewer">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
