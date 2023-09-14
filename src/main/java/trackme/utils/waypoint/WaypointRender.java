@@ -1,4 +1,4 @@
-package waypoint;
+package trackme.utils.waypoint;
 
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.WaypointPainter;

@@ -1,7 +1,7 @@
-package main;
+package trackme.utils;
 
-import api.MapApi;
 import org.jxmapviewer.google.GoogleMapsTileFactoryInfo;
+import trackme.utils.api.MapApi;
 
 public class CustomTileFactoryInfo extends GoogleMapsTileFactoryInfo {
     private static final String key = MapApi.GOOGLE_MAP_API_KEY;

@@ -1,19 +1,17 @@
-package main;
+package trackme.utils;
 
-import api.MapApi;
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.OSMTileFactoryInfo;
 import org.jxmapviewer.VirtualEarthTileFactoryInfo;
-import org.jxmapviewer.google.GoogleMapsTileFactoryInfo;
 import org.jxmapviewer.input.PanMouseInputListener;
 import org.jxmapviewer.input.ZoomMouseWheelListenerCenter;
 import org.jxmapviewer.viewer.DefaultTileFactory;
 import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.jxmapviewer.viewer.WaypointPainter;
-import waypoint.EventWaypoint;
-import waypoint.MyWaypoint;
-import waypoint.WaypointRender;
+import trackme.utils.waypoint.EventWaypoint;
+import trackme.utils.waypoint.MyWaypoint;
+import trackme.utils.waypoint.WaypointRender;
 
 import javax.swing.*;
 import java.util.HashSet;

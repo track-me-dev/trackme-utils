@@ -1,4 +1,4 @@
-package waypoint;
+package trackme.utils.waypoint;
 
 import javax.swing.*;
 import java.awt.*;

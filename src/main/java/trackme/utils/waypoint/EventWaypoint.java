@@ -1,4 +1,4 @@
-package waypoint;
+package trackme.utils.waypoint;
 
 public interface EventWaypoint {
 
