@@ -5,10 +5,9 @@ import org.jxmapviewer.OSMTileFactoryInfo;
 import org.jxmapviewer.VirtualEarthTileFactoryInfo;
 import org.jxmapviewer.input.PanMouseInputListener;
 import org.jxmapviewer.input.ZoomMouseWheelListenerCenter;
-import org.jxmapviewer.viewer.DefaultTileFactory;
-import org.jxmapviewer.viewer.GeoPosition;
-import org.jxmapviewer.viewer.TileFactoryInfo;
-import org.jxmapviewer.viewer.WaypointPainter;
+import org.jxmapviewer.viewer.*;
+import trackme.utils.maps.NaverMapsTileFactory;
+import trackme.utils.maps.NaverMapsTileFactoryInfo;
 import trackme.utils.waypoint.EventWaypoint;
 import trackme.utils.waypoint.MyWaypoint;
 import trackme.utils.waypoint.WaypointRender;
@@ -53,8 +52,8 @@ public class GpxGenerator extends JFrame {
     }
 
     private void initMapView() {
-        CustomTileFactoryInfo tileFactoryInfo = new CustomTileFactoryInfo();
-        DefaultTileFactory tileFactory = new DefaultTileFactory(tileFactoryInfo);
+        NaverMapsTileFactoryInfo tileFactoryInfo = new NaverMapsTileFactoryInfo();
+        TileFactory tileFactory = new NaverMapsTileFactory(tileFactoryInfo);
         mapViewer.setTileFactory(tileFactory);
         GeoPosition initialPosition = new GeoPosition(37.7749, -122.4194);
         mapViewer.setAddressLocation(initialPosition);

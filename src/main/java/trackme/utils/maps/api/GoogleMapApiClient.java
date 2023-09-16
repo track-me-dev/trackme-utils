@@ -1,4 +1,4 @@
-package trackme.utils.api;
+package trackme.utils.maps.api;
 
 import com.google.maps.DirectionsApi;
 import com.google.maps.GeoApiContext;
@@ -7,16 +7,16 @@ import com.google.maps.model.*;
 
 import java.io.IOException;
 
-public class GoolgeMapApiClient {
+public class GoogleMapApiClient {
 
     public static void main(String[] args) throws IOException, InterruptedException, ApiException {
-        GoolgeMapApiClient mapApiClient = new GoolgeMapApiClient();
+        GoogleMapApiClient mapApiClient = new GoogleMapApiClient();
         mapApiClient.request();
     }
 
     public void request() throws IOException, InterruptedException, ApiException {
         GeoApiContext context = new GeoApiContext.Builder()
-                .apiKey(MapApi.GOOGLE_MAP_API_KEY)
+                .apiKey(MapApiConfig.GOOGLE_MAP_API_KEY)
                 .build();
 
         DirectionsResult directionsResult = DirectionsApi.newRequest(context)

@@ -1,4 +1,4 @@
-package trackme.utils.api;
+package trackme.utils.maps.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;

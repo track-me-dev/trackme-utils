@@ -1,17 +1,13 @@
-package trackme.utils;
+package trackme.utils.maps;
 
 import org.jxmapviewer.google.GoogleMapsTileFactoryInfo;
-import trackme.utils.api.MapApi;
+import trackme.utils.maps.api.MapApiConfig;
 
-public class CustomTileFactoryInfo extends GoogleMapsTileFactoryInfo {
-    private static final String key = MapApi.GOOGLE_MAP_API_KEY;
+public class CustomGoogleMapsTileFactoryInfo extends GoogleMapsTileFactoryInfo {
+    private static final String key = MapApiConfig.GOOGLE_MAP_API_KEY;
 
-    public CustomTileFactoryInfo() {
+    public CustomGoogleMapsTileFactoryInfo() {
         super(key);
-    }
-
-    public CustomTileFactoryInfo(String name, String baseURL) {
-        super(name, baseURL, key);
     }
 
     @Override
@@ -23,8 +19,12 @@ public class CustomTileFactoryInfo extends GoogleMapsTileFactoryInfo {
         double lon_deg = xtile / n * 360.0D - 180.0D;
         double lat_rad = Math.atan(Math.sinh(3.141592653589793D * (1.0D - 2.0D * ytile / n)));
         double lat_deg = lat_rad * 180.0D / 3.141592653589793D;
-        String url = this.baseURL + "?center=" + lat_deg + "," + lon_deg + "&zoom=" + zoom + "&key=" + key + "&maptype=roadmap&size=" + 256 + "x" + 256;
-        return url;
+        return baseURL
+                + "?center=" + lat_deg + "," + lon_deg
+                + "&zoom=" + zoom
+                + "&key=" + key
+                + "&maptype=roadmap"
+                + "&size=" + 256 + "x" + 256;
     }
 
 
