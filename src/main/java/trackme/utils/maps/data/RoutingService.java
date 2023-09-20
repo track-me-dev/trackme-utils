@@ -1,26 +1,32 @@
-package trackme.utils.maps.api;
+package trackme.utils.maps.data;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import trackme.utils.maps.api.NaverMapApiResponse;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 
 import static trackme.utils.maps.api.MapApiConfig.*;
 
-public class NaverMapApiClient {
+public class RoutingService {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static RoutingService instance;
+    private ObjectMapper objectMapper;
 
-    public static void main(String[] args) {
-        NaverMapApiClient naverMapApiClient = new NaverMapApiClient();
-        naverMapApiClient.request();
+    public static RoutingService getInstance() {
+        if (instance == null) {
+            instance = new RoutingService();
+            instance.objectMapper = new ObjectMapper();
+        }
+        return instance;
     }
 
-    public void request() {
+    public List<RoutingData> routing(double fromLat, double fromLng, double toLat, double toLng) {
         String apiUrl = String.format(NAVER_DIRECTION_API_URL + "?start=%f,%f&goal=%f,%f&option=$s",
-                127.1058342, 37.359708, 129.075986, 35.179470, "trafast");
+                fromLng, fromLat, toLng, toLat, "trafast");
 
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
@@ -33,13 +39,21 @@ public class NaverMapApiClient {
             HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 NaverMapApiResponse naverMapApiResponse = objectMapper.readValue(response.body(), NaverMapApiResponse.class);
-                System.out.println(naverMapApiResponse.getRoute().get("traoptimal").get(0).getSummary().getStart().getLocation()[0]);
+                return naverMapApiResponse.getRoute().get("traoptimal").stream()
+                        .map(this::toRoutingData)
+                        .toList();
             } else {
                 System.err.println("Request failed with status code: " + response.statusCode());
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
     }
+
+    private RoutingData toRoutingData(NaverMapApiResponse.Route route) {
+        return new RoutingData(route.getSummary().getDistance(), route.getPath());
+    }
+
 
 }

@@ -1,6 +1,5 @@
 package trackme.utils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import trackme.utils.maps.api.MapApiConfig;
 
 import javax.imageio.ImageIO;
@@ -61,9 +60,7 @@ public class StaticMap extends JFrame {
             StaticMap staticMap = null;
             try {
                 staticMap = new StaticMap();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             staticMap.setVisible(true);

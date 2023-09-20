@@ -9,10 +9,12 @@ public class MyWaypoint extends DefaultWaypoint {
 
     private String name;
     private JButton button;
+    private PointType pointType;
 
-    public MyWaypoint(String name, EventWaypoint event, GeoPosition coord) {
+    public MyWaypoint(String name, PointType pointType, EventWaypoint event, GeoPosition coord) {
         super(coord);
         this.name = name;
+        this.pointType = pointType;
         initButton(event);
     }
 
@@ -37,5 +39,17 @@ public class MyWaypoint extends DefaultWaypoint {
 
     public void setButton(JButton button) {
         this.button = button;
+    }
+
+    public PointType getPointType() {
+        return pointType;
+    }
+
+    public void setPointType(PointType pointType) {
+        this.pointType = pointType;
+    }
+
+    public static enum PointType {
+        START, END;
     }
 }
