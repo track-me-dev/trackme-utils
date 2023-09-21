@@ -1,13 +1,16 @@
 package trackme.utils.maps.data;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import trackme.utils.maps.api.NaverMapApiResponse;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.StringJoiner;
 
 import static trackme.utils.maps.api.MapApiConfig.*;
 
@@ -24,28 +27,31 @@ public class RoutingService {
         return instance;
     }
 
-    public List<RoutingData> routing(double fromLat, double fromLng, double toLat, double toLng) {
-        String apiUrl = String.format(NAVER_DIRECTION_API_URL + "?start=%f,%f&goal=%f,%f&option=$s",
-                fromLng, fromLat, toLng, toLat, "trafast");
+    public List<RoutingData> doRouting(double[] from, double[] to, List<double[]> via) {
+        StringBuilder apiUrl = new StringBuilder(
+                String.format(NAVER_DIRECTION_API_URL + "?start=%f,%f&goal=%f,%f&option=%s",
+                from[1], from[0], to[1], to[0], "trafast"));
+        if (!via.isEmpty()) {
+            StringJoiner sj = new StringJoiner(URLEncoder.encode("|", StandardCharsets.UTF_8));
+            via.forEach(v -> {
+                sj.add(v[1] + "," + v[0]);
+            });
+            apiUrl.append("&waypoints=");
+            apiUrl.append(sj);
+        }
 
-        HttpClient httpClient = HttpClient.newHttpClient();
-        HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create(apiUrl))
-                .header("X-NCP-APIGW-API-KEY-ID", NAVER_MAP_API_KEY_ID)
-                .header("X-NCP-APIGW-API-KEY", NAVER_MAP_API_KEY)
-                .build();
-
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpGet request = new HttpGet(apiUrl.toString());
+        request.setHeader("X-NCP-APIGW-API-KEY-ID", NAVER_MAP_API_KEY_ID);
+        request.setHeader("X-NCP-APIGW-API-KEY", NAVER_MAP_API_KEY);
         try {
-            HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() == 200) {
-                NaverMapApiResponse naverMapApiResponse = objectMapper.readValue(response.body(), NaverMapApiResponse.class);
-                return naverMapApiResponse.getRoute().get("traoptimal").stream()
-                        .map(this::toRoutingData)
-                        .toList();
-            } else {
-                System.err.println("Request failed with status code: " + response.statusCode());
-            }
-        } catch (Exception e) {
+            NaverMapApiResponse naverMapApiResponse = httpClient.execute(request, httpResponse ->
+                    objectMapper.readValue(httpResponse.getEntity().getContent(), NaverMapApiResponse.class)
+            );
+            return naverMapApiResponse.getRoute().get("trafast").stream()
+                    .map(this::toRoutingData)
+                    .toList();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;

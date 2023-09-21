@@ -26,6 +26,8 @@ dependencies {
     implementation 'org.jxmapviewer:jxmapviewer2:2.6'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
     implementation 'com.graphhopper:graphhopper-core:7.0'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+
 
     compileOnly 'org.projectlombok:lombok:1.18.28'
     annotationProcessor 'org.projectlombok:lombok:1.18.28'

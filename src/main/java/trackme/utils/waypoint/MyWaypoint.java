@@ -49,7 +49,9 @@ public class MyWaypoint extends DefaultWaypoint {
         this.pointType = pointType;
     }
 
-    public static enum PointType {
-        START, END;
+    public enum PointType {
+        START,
+        VIA,
+        END;
     }
 }

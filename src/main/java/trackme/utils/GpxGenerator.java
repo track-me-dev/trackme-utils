@@ -34,8 +34,9 @@ public class GpxGenerator extends JFrame {
     private JButton buttonClearWaypoint;
     private EventWaypoint event;
     private JPopupMenu jPopupMenu1;
-    private JMenuItem menuEnd;
     private JMenuItem menuStart;
+    private JMenuItem menuVia;
+    private JMenuItem menuEnd;
 
     //== Constructor ==//
     public GpxGenerator() {
@@ -70,7 +71,7 @@ public class GpxGenerator extends JFrame {
         mapViewer.setTileFactory(tileFactory);
         GeoPosition initialPosition = new GeoPosition(37.566755, 126.97);
         mapViewer.setAddressLocation(initialPosition);
-        mapViewer.setZoom(12);
+        mapViewer.setZoom(3);
 
         PanMouseInputListener mouseMove = new PanMouseInputListener(mapViewer);
         mapViewer.addMouseListener(mouseMove);
@@ -104,6 +105,7 @@ public class GpxGenerator extends JFrame {
     private void initPopupMenus() {
         jPopupMenu1 = new JPopupMenu();
         initMenuStart();
+        initMenuVia();
         initMenuEnd();
         mapViewer.addMouseListener(new MouseAdapter() {
             public void mouseReleased(MouseEvent evt) {
@@ -119,32 +121,39 @@ public class GpxGenerator extends JFrame {
             mapViewer.add(d.getButton());
         }
         //  Routing Data
-        if (waypoints.size() == 2) {
+        if (waypoints.size() >= 2) {
             GeoPosition start = null;
+            List<GeoPosition> via = new ArrayList<>();
             GeoPosition end = null;
             for (MyWaypoint w : waypoints) {
                 if (w.getPointType() == MyWaypoint.PointType.START) {
                     start = w.getPosition();
+                } else if (w.getPointType() == MyWaypoint.PointType.VIA) {
+                    via.add(w.getPosition());
                 } else if (w.getPointType() == MyWaypoint.PointType.END) {
                     end = w.getPosition();
                 }
             }
-            if (start != null && end != null) {
-                routingData = RoutingService.getInstance().routing(start.getLatitude(), start.getLongitude(),
-                        end.getLatitude(), end.getLongitude());
-
-            } else {
-                routingData.clear();
+            if (start != null && end != null) { // start와 end가 동시에 있는 경우만 경로 생성
+                routingData = RoutingService.getInstance()
+                        .doRouting(
+                                new double[]{start.getLatitude(), start.getLongitude()},
+                                new double[]{end.getLatitude(), end.getLongitude()},
+                                via.stream().map(g -> new double[]{g.getLatitude(), g.getLongitude()}).toList()
+                        );
+                mapViewer.setRoutingData(routingData);
             }
-            mapViewer.setRoutingData(routingData);
         }
     }
     private void addWaypoint(MyWaypoint waypoint) {
         for (MyWaypoint d : waypoints) {
             mapViewer.remove(d.getButton());
         }
-        // START와 END가 이미 있으면 해당 waypoint 삭제
-        waypoints.removeIf(myWaypoint -> myWaypoint.getPointType() == waypoint.getPointType());
+        // START나 END가 추가될 경우 기존 START, END 삭제
+        if (waypoint.getPointType() == MyWaypoint.PointType.START
+                || waypoint.getPointType() == MyWaypoint.PointType.END) {
+            waypoints.removeIf(myWaypoint -> myWaypoint.getPointType() == waypoint.getPointType());
+        }
         waypoints.add(waypoint);
         initWaypoint();
     }
@@ -171,6 +180,17 @@ public class GpxGenerator extends JFrame {
             addWaypoint(wayPoint);
         });
         jPopupMenu1.add(menuStart);
+    }
+    private void initMenuVia() {
+        menuVia = new JMenuItem();
+        menuVia.setText("Via");
+        menuVia.addActionListener(e -> {
+            GeoPosition geop = mapViewer.convertPointToGeoPosition(mousePosition);
+            MyWaypoint wayPoint = new MyWaypoint("Via Location", MyWaypoint.PointType.VIA, event,
+                    new GeoPosition(geop.getLatitude(), geop.getLongitude()));
+            addWaypoint(wayPoint);
+        });
+        jPopupMenu1.add(menuVia);
     }
     private void initMenuEnd() {
         menuEnd = new JMenuItem();

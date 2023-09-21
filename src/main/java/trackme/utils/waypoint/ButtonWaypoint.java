@@ -13,6 +13,8 @@ public class ButtonWaypoint extends JButton {
             icon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/icon/start-point.png")));
         } else if (pointType == MyWaypoint.PointType.END) {
             icon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/icon/end-point.png")));
+        } else if (pointType == MyWaypoint.PointType.VIA) {
+            icon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/icon/via-point.png")));
         }
         assert icon != null;
         icon.setImage(icon.getImage().getScaledInstance(24, 32, Image.SCALE_DEFAULT));
