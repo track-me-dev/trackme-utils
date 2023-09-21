@@ -10,7 +10,7 @@ import trackme.utils.maps.data.RoutingData;
 import trackme.utils.maps.data.RoutingService;
 import trackme.utils.waypoint.EventWaypoint;
 import trackme.utils.waypoint.MyWaypoint;
-import trackme.utils.waypoint.WaypointRender;
+import trackme.utils.waypoint.WaypointRenderer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,10 +21,12 @@ import java.util.List;
 
 public class GpxGenerator extends JFrame {
 
+    //== location point ==//
     private final Set<MyWaypoint> waypoints = new HashSet<>();
     private List<RoutingData> routingData = new ArrayList<>();
     private Point mousePosition;
 
+    //== Java Swing Components ==//
     private JPanel mainPanel;
     private JxMapViewerCustom mapViewer;
     private JComboBox<String> comboMapType;
@@ -35,15 +37,17 @@ public class GpxGenerator extends JFrame {
     private JMenuItem menuEnd;
     private JMenuItem menuStart;
 
+    //== Constructor ==//
     public GpxGenerator() {
         initFrame();
         initMapView();
         initComboMapType();
-        event = waypoint -> JOptionPane.showMessageDialog(this, waypoint.getName());
+        initEvent();
         initButtons();
         initPopupMenus();
     }
 
+    //== main method ==//
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             GpxGenerator gpxGenerator = new GpxGenerator();
@@ -51,6 +55,7 @@ public class GpxGenerator extends JFrame {
         });
     }
 
+    //== initialization methods ==//
     private void initFrame() {
         setContentPane(mainPanel);
         setTitle("Gpx Generator");
@@ -59,12 +64,11 @@ public class GpxGenerator extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
     }
-
     private void initMapView() {
         TileFactoryInfo tileFactoryInfo = new OSMTileFactoryInfo();
         TileFactory tileFactory = new DefaultTileFactory(tileFactoryInfo);
         mapViewer.setTileFactory(tileFactory);
-        GeoPosition initialPosition = new GeoPosition(37.7749, -122.4194);
+        GeoPosition initialPosition = new GeoPosition(37.566755, 126.97);
         mapViewer.setAddressLocation(initialPosition);
         mapViewer.setZoom(12);
 
@@ -73,7 +77,6 @@ public class GpxGenerator extends JFrame {
         mapViewer.addMouseMotionListener(mouseMove);
         mapViewer.addMouseWheelListener(new ZoomMouseWheelListenerCenter(mapViewer));
     }
-
     private void initComboMapType() {
         comboMapType.addActionListener(event -> {
             TileFactoryInfo info;
@@ -88,7 +91,9 @@ public class GpxGenerator extends JFrame {
             mapViewer.setTileFactory(tileFactory);
         });
     }
-
+    private void initEvent() {
+        event = waypoint -> JOptionPane.showMessageDialog(this, waypoint.getName());
+    }
     private void initButtons() {
         buttonAddWaypoint.addActionListener(e -> {
         });
@@ -96,7 +101,6 @@ public class GpxGenerator extends JFrame {
             clearWaypoint();
         });
     }
-
     private void initPopupMenus() {
         jPopupMenu1 = new JPopupMenu();
         initMenuStart();
@@ -107,9 +111,8 @@ public class GpxGenerator extends JFrame {
             }
         });
     }
-
     private void initWaypoint() {
-        WaypointPainter<MyWaypoint> wp = new WaypointRender();
+        WaypointPainter<MyWaypoint> wp = new WaypointRenderer();
         wp.setWaypoints(waypoints);
         mapViewer.setOverlayPainter(wp);
         for (MyWaypoint d : waypoints) {
@@ -127,7 +130,8 @@ public class GpxGenerator extends JFrame {
                 }
             }
             if (start != null && end != null) {
-                routingData = RoutingService.getInstance().routing(start.getLatitude(), start.getLongitude(), end.getLatitude(), end.getLongitude());
+                routingData = RoutingService.getInstance().routing(start.getLatitude(), start.getLongitude(),
+                        end.getLatitude(), end.getLongitude());
 
             } else {
                 routingData.clear();
@@ -135,26 +139,21 @@ public class GpxGenerator extends JFrame {
             mapViewer.setRoutingData(routingData);
         }
     }
-
     private void addWaypoint(MyWaypoint waypoint) {
         for (MyWaypoint d : waypoints) {
             mapViewer.remove(d.getButton());
         }
-        Iterator<MyWaypoint> iter = waypoints.iterator();
-        while (iter.hasNext()) {
-            if (iter.next().getPointType() == waypoint.getPointType()) {
-                iter.remove();
-            }
-        }
+        // START와 END가 이미 있으면 해당 waypoint 삭제
+        waypoints.removeIf(myWaypoint -> myWaypoint.getPointType() == waypoint.getPointType());
         waypoints.add(waypoint);
         initWaypoint();
     }
-
     private void clearWaypoint() {
         for (MyWaypoint d : waypoints) {
             mapViewer.remove(d.getButton());
         }
         if (!routingData.isEmpty()) {
+            routingData = new ArrayList<>(routingData);
             routingData.clear();
         }
         if (!waypoints.isEmpty()) {
@@ -162,7 +161,6 @@ public class GpxGenerator extends JFrame {
         }
         initWaypoint();
     }
-
     private void initMenuStart() {
         menuStart = new JMenuItem();
         menuStart.setText("Start");
@@ -174,7 +172,6 @@ public class GpxGenerator extends JFrame {
         });
         jPopupMenu1.add(menuStart);
     }
-
     private void initMenuEnd() {
         menuEnd = new JMenuItem();
         menuEnd.setText("End");
@@ -186,7 +183,6 @@ public class GpxGenerator extends JFrame {
         });
         jPopupMenu1.add(menuEnd);
     }
-
     private void mapViewerMouseReleased(MouseEvent evt) {
         if (SwingUtilities.isRightMouseButton(evt)) {
             mousePosition = evt.getPoint();

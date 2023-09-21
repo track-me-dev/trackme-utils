@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
 
-public class WaypointRender extends WaypointPainter<MyWaypoint> {
+public class WaypointRenderer extends WaypointPainter<MyWaypoint> {
 
     @Override
     protected void doPaint(Graphics2D g, JXMapViewer map, int width, int height) {

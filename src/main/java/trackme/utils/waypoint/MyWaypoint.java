@@ -19,7 +19,7 @@ public class MyWaypoint extends DefaultWaypoint {
     }
 
     private void initButton(EventWaypoint event) {
-        button = new ButtonWaypoint();
+        button = new ButtonWaypoint(pointType);
         button.addActionListener(e -> {
             event.selected(this);
         });
