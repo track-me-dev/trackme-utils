@@ -1,13 +1,11 @@
-package trackme.utils.maps.data;
-
-import com.graphhopper.util.PointList;
+package trackme.utils.maps.routing;
 
 import java.util.List;
 
 public class RoutingData {
 
     private double distance;
-    private List<double[]> path;
+    private List<double[]> path; // [lat, lng]
 
     public RoutingData() {
     }

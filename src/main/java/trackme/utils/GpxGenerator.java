@@ -5,9 +5,10 @@ import org.jxmapviewer.VirtualEarthTileFactoryInfo;
 import org.jxmapviewer.input.PanMouseInputListener;
 import org.jxmapviewer.input.ZoomMouseWheelListenerCenter;
 import org.jxmapviewer.viewer.*;
-import trackme.utils.maps.JxMapViewerCustom;
-import trackme.utils.maps.data.RoutingData;
-import trackme.utils.maps.data.RoutingService;
+import trackme.utils.generator.GpxFileGenerator;
+import trackme.utils.maps.view.JxMapViewerCustom;
+import trackme.utils.maps.routing.RoutingData;
+import trackme.utils.maps.routing.RoutingService;
 import trackme.utils.waypoint.EventWaypoint;
 import trackme.utils.waypoint.MyWaypoint;
 import trackme.utils.waypoint.WaypointRenderer;
@@ -32,6 +33,7 @@ public class GpxGenerator extends JFrame {
     private JComboBox<String> comboMapType;
     private JButton buttonAddWaypoint;
     private JButton buttonClearWaypoint;
+    private JButton buttonGenerate;
     private EventWaypoint event;
     private JPopupMenu jPopupMenu1;
     private JMenuItem menuStart;
@@ -98,8 +100,11 @@ public class GpxGenerator extends JFrame {
     private void initButtons() {
         buttonAddWaypoint.addActionListener(e -> {
         });
-        buttonClearWaypoint.addActionListener(event -> {
+        buttonClearWaypoint.addActionListener(e -> {
             clearWaypoint();
+        });
+        buttonGenerate.addActionListener(e -> {
+            generateGpx();
         });
     }
     private void initPopupMenus() {
@@ -169,6 +174,12 @@ public class GpxGenerator extends JFrame {
             waypoints.clear();
         }
         initWaypoint();
+    }
+
+    private void generateGpx() {
+        if (!routingData.isEmpty()) {
+            new GpxFileGenerator().generate(routingData, 30);
+        }
     }
     private void initMenuStart() {
         menuStart = new JMenuItem();

@@ -1,4 +1,4 @@
-package trackme.utils.maps;
+package trackme.utils.maps.view;
 
 import org.jxmapviewer.google.GoogleMapsTileFactoryInfo;
 import trackme.utils.maps.api.MapApiConfig;

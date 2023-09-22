@@ -1,8 +1,8 @@
-package trackme.utils.maps;
+package trackme.utils.maps.view;
 
 import org.jxmapviewer.JXMapViewer;
 import org.jxmapviewer.viewer.GeoPosition;
-import trackme.utils.maps.data.RoutingData;
+import trackme.utils.maps.routing.RoutingData;
 
 import java.awt.*;
 import java.awt.geom.Path2D;
@@ -43,7 +43,7 @@ public class JxMapViewerCustom extends JXMapViewer {
 
     private void draw(Path2D p2, RoutingData d) {
         d.getPath().forEach(p -> {
-                    Point2D point = convertGeoPositionToPoint(new GeoPosition(p[1], p[0]));
+                    Point2D point = convertGeoPositionToPoint(new GeoPosition(p[0], p[1]));
                     if (first) {
                         first = false;
                         p2.moveTo(point.getX(), point.getY());

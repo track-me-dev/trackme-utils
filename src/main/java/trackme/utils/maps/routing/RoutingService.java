@@ -1,4 +1,4 @@
-package trackme.utils.maps.data;
+package trackme.utils.maps.routing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.client.methods.HttpGet;
@@ -58,7 +58,10 @@ public class RoutingService {
     }
 
     private RoutingData toRoutingData(NaverMapApiResponse.Route route) {
-        return new RoutingData(route.getSummary().getDistance(), route.getPath());
+        List<double[]> routingPath = route.getPath().stream()
+                .map(p -> new double[]{p[1], p[0]})
+                .toList();
+        return new RoutingData(route.getSummary().getDistance(), routingPath);
     }
 
 
