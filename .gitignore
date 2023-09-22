@@ -5,7 +5,7 @@
 build
 
 # Ignore MapApiConfig to secure api key
-src/main/java/trackme/utils/maps/api/MapApiConfig
+src/main/java/trackme/utils/maps/api/MapApiConfig.java
 
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
