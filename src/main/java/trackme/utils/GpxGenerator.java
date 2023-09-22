@@ -34,7 +34,7 @@ public class GpxGenerator extends JFrame {
     private JButton buttonAddWaypoint;
     private JButton buttonClearWaypoint;
     private JButton buttonGenerate;
-    private EventWaypoint event;
+    private EventWaypoint eventWaypoint;
     private JPopupMenu jPopupMenu1;
     private JMenuItem menuStart;
     private JMenuItem menuVia;
@@ -95,7 +95,7 @@ public class GpxGenerator extends JFrame {
         });
     }
     private void initEvent() {
-        event = waypoint -> JOptionPane.showMessageDialog(this, waypoint.getName());
+        eventWaypoint = waypoint -> JOptionPane.showMessageDialog(this, waypoint.getName());
     }
     private void initButtons() {
         buttonAddWaypoint.addActionListener(e -> {
@@ -151,13 +151,23 @@ public class GpxGenerator extends JFrame {
         }
     }
     private void addWaypoint(MyWaypoint waypoint) {
-        for (MyWaypoint d : waypoints) {
-            mapViewer.remove(d.getButton());
+        for (MyWaypoint p : waypoints) {
+            mapViewer.remove(p.getButton());
         }
         // START나 END가 추가될 경우 기존 START, END 삭제
         if (waypoint.getPointType() == MyWaypoint.PointType.START
                 || waypoint.getPointType() == MyWaypoint.PointType.END) {
             waypoints.removeIf(myWaypoint -> myWaypoint.getPointType() == waypoint.getPointType());
+        }
+        // VIA는 최대 5개까지만 추가 가능
+        if (waypoint.getPointType() == MyWaypoint.PointType.VIA) {
+            long count = waypoints.stream()
+                    .filter(p -> p.getPointType() == MyWaypoint.PointType.VIA)
+                    .count();
+            if (count >= 5) {
+                JOptionPane.showMessageDialog(this, "경유지는 최대 5개까지만 추가 가능합니다.");
+                return;
+            }
         }
         waypoints.add(waypoint);
         initWaypoint();
@@ -178,7 +188,13 @@ public class GpxGenerator extends JFrame {
 
     private void generateGpx() {
         if (!routingData.isEmpty()) {
-            new GpxFileGenerator().generate(routingData, 30);
+            try {
+                new GpxFileGenerator().generate(routingData, 30);
+                JOptionPane.showMessageDialog(this, "파일이 생성되었습니다.");
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "파일 생성에 실패했습니다.");
+            }
         }
     }
     private void initMenuStart() {
@@ -186,7 +202,7 @@ public class GpxGenerator extends JFrame {
         menuStart.setText("Start");
         menuStart.addActionListener(e -> {
             GeoPosition geop = mapViewer.convertPointToGeoPosition(mousePosition);
-            MyWaypoint wayPoint = new MyWaypoint("Start Location", MyWaypoint.PointType.START, event,
+            MyWaypoint wayPoint = new MyWaypoint("Start Location", MyWaypoint.PointType.START, eventWaypoint,
                     new GeoPosition(geop.getLatitude(), geop.getLongitude()));
             addWaypoint(wayPoint);
         });
@@ -197,7 +213,7 @@ public class GpxGenerator extends JFrame {
         menuVia.setText("Via");
         menuVia.addActionListener(e -> {
             GeoPosition geop = mapViewer.convertPointToGeoPosition(mousePosition);
-            MyWaypoint wayPoint = new MyWaypoint("Via Location", MyWaypoint.PointType.VIA, event,
+            MyWaypoint wayPoint = new MyWaypoint("Via Location", MyWaypoint.PointType.VIA, eventWaypoint,
                     new GeoPosition(geop.getLatitude(), geop.getLongitude()));
             addWaypoint(wayPoint);
         });
@@ -208,7 +224,7 @@ public class GpxGenerator extends JFrame {
         menuEnd.setText("End");
         menuEnd.addActionListener(e -> {
             GeoPosition geop = mapViewer.convertPointToGeoPosition(mousePosition);
-            MyWaypoint wayPoint = new MyWaypoint("End Location", MyWaypoint.PointType.END, event,
+            MyWaypoint wayPoint = new MyWaypoint("End Location", MyWaypoint.PointType.END, eventWaypoint,
                     new GeoPosition(geop.getLatitude(), geop.getLongitude()));
             addWaypoint(wayPoint);
         });

@@ -50,7 +50,11 @@ public class GpxFileGenerator {
             }
         }
         sb.append("</gpx>");
-        write(sb.toString());
+        try {
+            write(sb.toString());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void write(String content) {
@@ -59,7 +63,7 @@ public class GpxFileGenerator {
         try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
             writer.println(content);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
