@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.UUID;
 
 public class GpxFileGenerator {
 
@@ -18,9 +19,6 @@ public class GpxFileGenerator {
                 .append("<gpx version=\"1.1\" creator=\"trackme-utils\">")
                 .append("\n");
 
-        double totalDistance = routingData.stream()
-                .mapToDouble(RoutingData::getDistance)
-                .sum();
         averageSpeed *= 1000;
         averageSpeed /= 3600;
         double[] prevLocation = routingData.get(0).getPath().get(0);
@@ -56,11 +54,10 @@ public class GpxFileGenerator {
     }
 
     private void write(String content) {
-        String filePath = "example.gpx";
+        String filePath = String.format("data/gpx-%s.gpx", UUID.randomUUID().toString().substring(0, 5));
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
             writer.println(content);
-            System.out.println("GPX file written successfully.");
         } catch (IOException e) {
             e.printStackTrace();
         }
